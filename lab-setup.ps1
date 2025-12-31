@@ -124,7 +124,6 @@ function New-StudentUser {
                       -NoPassword `
                       -FullName "Ogrenci $UserName" `
                       -Description "Lab ogrenci hesabi" `
-                      -UserMayNotChangePassword $false `
                       -ErrorAction Stop
 
         Write-Host "[BASARILI] '$UserName' kullanicisi olusturuldu (sifresiz)." -ForegroundColor Green
