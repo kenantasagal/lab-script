@@ -30,12 +30,17 @@ cd lab-script
 .\lab-setup.ps1
 ```
 
-### Uzaktan Calistirma
+### Uzaktan Calistirma (GitHub)
 
 ```powershell
-# Dogrudan URL'den calistirin (script bir web sunucusunda ise)
-irm https://sunucunuz.com/lab-setup.ps1 | iex
+# GitHub'dan dogrudan calistirin
+irm https://raw.githubusercontent.com/kenantasagal/lab-script/main/lab-setup.ps1 | iex
+
+# VEYA kisa URL ile
+irm https://github.com/kenantasagal/lab-script/raw/main/lab-setup.ps1 | iex
 ```
+
+**ONEMLI**: PowerShell'i mutlaka **Administrator** olarak acin!
 
 ## Kullanim
 

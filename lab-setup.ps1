@@ -1,5 +1,3 @@
-#Requires -RunAsAdministrator
-
 <#
 .SYNOPSIS
     Okul lab bilgisayarlari icin otomatik konfigurasyonu yapar.
