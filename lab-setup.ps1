@@ -91,6 +91,28 @@ function Test-LocalUserExists {
     }
 }
 
+function Get-StudentUsers {
+    # Sistem kullanici isimleri (silinmemeli)
+    $systemUsers = @('Administrator', 'Guest', 'DefaultAccount', 'WDAGUtilityAccount')
+    
+    try {
+        # Tum yerel kullanicilari al
+        $allUsers = Get-LocalUser
+        
+        # Sadece OgrenciXX formatindaki kullanicilari filtrele ve sistem kullanicilarini hariç tut
+        $studentUsers = $allUsers | Where-Object { 
+            $_.Name -match '^Ogrenci\d{2}$' -and 
+            $_.Name -notin $systemUsers
+        } | Sort-Object Name
+        
+        return $studentUsers
+    }
+    catch {
+        Write-Host "[HATA] Kullanicilar listelenemedi: $_" -ForegroundColor Red
+        return @()
+    }
+}
+
 function New-LabGroup {
     param([string]$GroupName)
 
@@ -170,7 +192,7 @@ function Set-ComputerNameSafely {
     }
 
     try {
-        Rename-Computer -NewName $NewName -Force -ErrorAction Stop
+        Rename-Computer -NewName $NewName -Force -ErrorAction Stop | Out-Null
         Write-Host "[BASARILI] Bilgisayar adi '$NewName' olarak degistirildi." -ForegroundColor Green
         Write-Host "[ONEMLI] Degisikligin gecerli olmasi icin yeniden baslatma gerekiyor!" -ForegroundColor Magenta
         return $true
@@ -246,14 +268,43 @@ function Start-UserRemoval {
     Write-Host "=== KULLANICI SILME ===" -ForegroundColor Cyan
     Write-Host ""
 
-    # Kullanici adini al
-    $userName = Read-Host "Silinecek kullanici adi (ornek: Ogrenci07)"
+    # Ogrenci kullanicilarini listele
+    $studentUsers = Get-StudentUsers
 
-    # Bos mu kontrol et
-    if ([string]::IsNullOrWhiteSpace($userName)) {
-        Write-Host "Hata: Kullanici adi bos olamaz!" -ForegroundColor Red
+    if ($studentUsers.Count -eq 0) {
+        Write-Host "[BILGI] Silinebilecek ogrenci kullanicisi bulunamadi." -ForegroundColor Yellow
+        Write-Host ""
         return
     }
+
+    # Kullanicilari listele
+    Write-Host "--- SILINEBILIR OGRENCI KULLANICILARI ---" -ForegroundColor Yellow
+    Write-Host ""
+    $index = 1
+    $userList = @()
+    foreach ($user in $studentUsers) {
+        $userList += $user.Name
+        Write-Host "$index) $($user.Name)" -ForegroundColor White
+        $index++
+    }
+    Write-Host "0) Iptal" -ForegroundColor Red
+    Write-Host ""
+
+    # Kullanicidan secim al
+    $maxIndex = $studentUsers.Count
+    $choice = Get-ValidatedInput -Prompt "Silinecek kullaniciyi secin (0-$maxIndex)" -Min 0 -Max $maxIndex
+
+    if ($choice -eq 0) {
+        Write-Host "Islem iptal edildi." -ForegroundColor Yellow
+        return
+    }
+
+    # Secilen kullaniciyi al
+    $userName = $userList[$choice - 1]
+
+    Write-Host ""
+    Write-Host "Secilen kullanici: $userName" -ForegroundColor Cyan
+    Write-Host ""
 
     # Silme islemini yap
     if (Remove-StudentUser -UserName $userName) {
