@@ -16,6 +16,7 @@ irm https://raw.githubusercontent.com/kenantasagal/lab-script/main/lab-setup.ps1
 - **Kullanici Yonetimi**: OgrenciXX kullanicilari olusturur (sifresiz)
 - **Admin Yetkisi**: Olusturulan kullanicilar Administrator yetkisine sahip
 - **Bilgisayar Adi Degisimi**: LAB-LL-BILXX formatinda otomatik isimlendirme
+- **Kullanici Silme**: Kullanicilari dosyalari ile beraber guvenli sekilde siler
 - **Akilli Dogrulama**: Girdi kontrolu ve cakisma onleme
 - **Uzaktan Calistirma**: `irm | iex` destegi
 
@@ -52,6 +53,8 @@ irm https://github.com/kenantasagal/lab-script/raw/main/lab-setup.ps1 | iex
 
 ## Kullanim
 
+### Yeni Bilgisayar Yapilandirma
+
 1. PowerShell'i **Administrator** olarak acin
 2. Scripti calistirin
 3. Menuden **1** secin
@@ -60,6 +63,16 @@ irm https://github.com/kenantasagal/lab-script/raw/main/lab-setup.ps1 | iex
    - Bilgisayar sirasi (1-99)
 5. Ozeti kontrol edin ve onayin
 6. Islemler tamamlaninca sistemi yeniden baslattin
+
+### Kullanici Silme
+
+1. Menuden **2** secin
+2. Silinecek kullanici adini girin (ornek: Ogrenci07)
+3. Silme ozetini kontrol edin
+4. Onaylayin (E/H)
+5. Kullanici ve tum dosyalari silinecek
+
+**UYARI**: Silme islemi geri alinamaz! C:\Users\OgrenciXX klasoru tamamen silinir.
 
 ## Ornekler
 
@@ -120,7 +133,7 @@ Format: `OgrenciXX`
 
 ## Yapilan Islemler
 
-Script calistiginda asagidaki islemler otomatik olarak yapilir:
+### Yeni Bilgisayar Yapilandirma (Secim 1)
 
 1. **Grup Olusturma**: `LAB-XX` grubu yoksa olusturulur
 2. **Kullanici Olusturma**: `OgrenciXX` kullanicisi yoksa olusturulur (sifresiz)
@@ -129,13 +142,22 @@ Script calistiginda asagidaki islemler otomatik olarak yapilir:
 5. **Bilgisayar Adi**: Bilgisayar adi `LAB-LL-BILXX` olarak degistirilir
 6. **Restart**: Degisikliklerin gecerli olmasi icin sistem yeniden baslatilir
 
+### Kullanici Silme (Secim 2)
+
+1. **Format Kontrolu**: Sadece `OgrenciXX` formatindaki kullanicilar silinebilir
+2. **Var Mi Kontrolu**: Kullanicinin var oldugu dogrulanir
+3. **Onay Alma**: Kullanicidan silme onayi alinir
+4. **Kullanici Silme**: Yerel kullanici hesabi silinir
+5. **Profil Silme**: `C:\Users\OgrenciXX` klasoru tum icerikle beraber silinir
+
 ## Guvenlik
 
 - Admin yetkisi kontrolu yapilir
 - Girdi dogrulama (1-6 ve 1-99 aralik)
 - Kullanici/grup cakismasi onlenir
-- Kullanici onayi alinir
+- Kullanici onayi alinir (hem olusturma hem silme icin)
 - Kullanicilar sifresiz olusturulur (ilk oturumda sifre belirlenebilir)
+- **Silme Guvenlik**: Sadece `OgrenciXX` formatindaki kullanicilar silinebilir (sistem kullanicilari korunur)
 
 ## Hata Yonetimi
 
@@ -168,6 +190,15 @@ Hayir! Kullanici varsa "zaten mevcut" mesaji verir ve devam eder.
 ### Bilgisayar adini degistirmeden test edebilir miyim?
 Evet, kodu duzenleyerek `Set-ComputerNameSafely` satirini yorum satirina cevirin.
 
+### Kullanici silerken dosyalar geri getirebilir miyim?
+Hayir! Silme islemi kalicidir. Onemli dosyalar varsa once yedek alin.
+
+### Neden sadece OgrenciXX formatindaki kullanicilar silinebiliyor?
+Guvenlik icin. Boylece yanlis islemle Administrator, System gibi onemli kullanicilarin silinmesi onlenir.
+
+### Kullanici silindiginde gruplardan da cikar mi?
+Evet! Windows otomatik olarak kullaniciyi tum gruplardan (LAB-XX, Administrators) cikarir.
+
 ## Sorun Giderme
 
 ### "Script disabled" hatasi
@@ -196,6 +227,12 @@ Bu script egitim amacli olarak gelistirilmistir. Serbestce kullanabilir ve degis
 Lab Otomasyon Ekibi
 
 ## Surum Gecmisi
+
+### v1.1 (2025-12-31)
+- **YENI**: Kullanici silme ozelligi eklendi
+- Kullanicilari dosyalari ile beraber silme
+- Guvenlik: Sadece OgrenciXX formatindaki kullanicilar silinebilir
+- Silme isleminde onay mekanizmasi
 
 ### v1.0 (2025-12-31)
 - Ilk surum

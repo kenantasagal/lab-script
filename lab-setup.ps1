@@ -24,6 +24,7 @@ function Show-Menu {
     Write-Host "========================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "1) Yeni ogrenci bilgisayari konfigure et" -ForegroundColor Yellow
+    Write-Host "2) Kullanici sil (dosyalari ile beraber)" -ForegroundColor Magenta
     Write-Host "0) Cikis" -ForegroundColor Red
     Write-Host ""
 }
@@ -181,9 +182,94 @@ function Set-ComputerNameSafely {
     }
 }
 
+function Remove-StudentUser {
+    param([string]$UserName)
+
+    # Guvenlik kontrolu: Sadece Ogrenci ile baslayan kullanicilar silinebilir
+    if ($UserName -notmatch '^Ogrenci\d{2}$') {
+        Write-Host "[HATA] Guvenlik: Sadece 'OgrenciXX' formatindaki kullanicilar silinebilir!" -ForegroundColor Red
+        return $false
+    }
+
+    # Kullanici var mi kontrol et
+    if (-not (Test-LocalUserExists -UserName $UserName)) {
+        Write-Host "[HATA] '$UserName' kullanicisi bulunamadi!" -ForegroundColor Red
+        return $false
+    }
+
+    # Kullanici profil yolu
+    $userProfilePath = "C:\Users\$UserName"
+
+    Write-Host ""
+    Write-Host "--- SILINECEK BILGILER ---" -ForegroundColor Yellow
+    Write-Host "Kullanici adi : $UserName" -ForegroundColor White
+    Write-Host "Profil klasoru: $userProfilePath" -ForegroundColor White
+    Write-Host ""
+    Write-Host "UYARI: Bu islem geri alinamaz! Tum dosyalar silinecek!" -ForegroundColor Red
+    Write-Host ""
+
+    # Onay al
+    $confirmation = Read-Host "Silme islemini onayliyor musunuz? (E/H)"
+    if ($confirmation -notmatch '^[Ee]$') {
+        Write-Host "Islem iptal edildi." -ForegroundColor Yellow
+        return $false
+    }
+
+    try {
+        # Kullaniciyi sil
+        Remove-LocalUser -Name $UserName -ErrorAction Stop
+        Write-Host "[BASARILI] '$UserName' kullanicisi silindi." -ForegroundColor Green
+
+        # Profil klasorunu sil
+        if (Test-Path $userProfilePath) {
+            Write-Host "Profil klasoru siliniyor..." -ForegroundColor Cyan
+            Remove-Item -Path $userProfilePath -Recurse -Force -ErrorAction Stop
+            Write-Host "[BASARILI] Profil klasoru silindi: $userProfilePath" -ForegroundColor Green
+        }
+        else {
+            Write-Host "[BILGI] Profil klasoru bulunamadi (zaten silinmis olabilir)." -ForegroundColor Yellow
+        }
+
+        return $true
+    }
+    catch {
+        Write-Host "[HATA] Kullanici silinemedi: $_" -ForegroundColor Red
+        return $false
+    }
+}
+
 # ==============================
-# ANA ISLEM FONKSIYONU
+# ANA ISLEM FONKSIYONLARI
 # ==============================
+
+function Start-UserRemoval {
+    Write-Host ""
+    Write-Host "=== KULLANICI SILME ===" -ForegroundColor Cyan
+    Write-Host ""
+
+    # Kullanici adini al
+    $userName = Read-Host "Silinecek kullanici adi (ornek: Ogrenci07)"
+
+    # Bos mu kontrol et
+    if ([string]::IsNullOrWhiteSpace($userName)) {
+        Write-Host "Hata: Kullanici adi bos olamaz!" -ForegroundColor Red
+        return
+    }
+
+    # Silme islemini yap
+    if (Remove-StudentUser -UserName $userName) {
+        Write-Host ""
+        Write-Host "========================================" -ForegroundColor Green
+        Write-Host "   KULLANICI BASARIYLA SILINDI!" -ForegroundColor Green
+        Write-Host "========================================" -ForegroundColor Green
+    }
+    else {
+        Write-Host ""
+        Write-Host "========================================" -ForegroundColor Red
+        Write-Host "   SILME ISLEMI BASARISIZ!" -ForegroundColor Red
+        Write-Host "========================================" -ForegroundColor Red
+    }
+}
 
 function Start-LabConfiguration {
     Write-Host ""
@@ -311,12 +397,17 @@ function Start-Main {
                 Write-Host ""
                 Read-Host "Devam etmek icin Enter'a basin"
             }
+            "2" {
+                Start-UserRemoval
+                Write-Host ""
+                Read-Host "Devam etmek icin Enter'a basin"
+            }
             "0" {
                 Write-Host "Cikis yapiliyor..." -ForegroundColor Yellow
                 exit 0
             }
             default {
-                Write-Host "Gecersiz secim! Lutfen 1 veya 0 girin." -ForegroundColor Red
+                Write-Host "Gecersiz secim! Lutfen 1, 2 veya 0 girin." -ForegroundColor Red
                 Start-Sleep -Seconds 2
             }
         }
