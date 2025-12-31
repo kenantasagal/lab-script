@@ -2,6 +2,14 @@
 
 Windows lab ortamlari icin PowerShell tabanli otomasyon araci.
 
+## Hizli Baslangic
+
+PowerShell'i **Administrator** olarak acip asagidaki komutu calistirin:
+
+```powershell
+irm https://raw.githubusercontent.com/kenantasagal/lab-script/main/lab-setup.ps1 | iex
+```
+
 ## Ozellikler
 
 - **Otomatik Grup Yonetimi**: LAB-01 ile LAB-06 arasinda lab gruplari olusturur
