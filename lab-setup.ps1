@@ -19,13 +19,31 @@
 
 function Show-Menu {
     Clear-Host
-    Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host "   LAB BILGISAYAR YAPILANDIRMA ARACI   " -ForegroundColor Cyan
-    Write-Host "========================================" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "1) Yeni ogrenci bilgisayari konfigure et" -ForegroundColor Yellow
-    Write-Host "2) Kullanici sil (dosyalari ile beraber)" -ForegroundColor Magenta
-    Write-Host "0) Cikis" -ForegroundColor Red
+    Write-Host "╔════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "║                                                    ║" -ForegroundColor Cyan
+    Write-Host "║     " -NoNewline -ForegroundColor Cyan
+    Write-Host "LAB BILGISAYAR YAPILANDIRMA ARACI" -NoNewline -ForegroundColor White -BackgroundColor DarkBlue
+    Write-Host "     ║" -ForegroundColor Cyan
+    Write-Host "║                                                    ║" -ForegroundColor Cyan
+    Write-Host "╚════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  ┌──────────────────────────────────────────────┐" -ForegroundColor DarkGray
+    Write-Host "  │  " -NoNewline -ForegroundColor DarkGray
+    Write-Host "1" -NoNewline -ForegroundColor Yellow
+    Write-Host "  │  " -NoNewline -ForegroundColor DarkGray
+    Write-Host "Yeni ogrenci bilgisayari konfigure et" -ForegroundColor White
+    Write-Host "  ├──────────────────────────────────────────────┤" -ForegroundColor DarkGray
+    Write-Host "  │  " -NoNewline -ForegroundColor DarkGray
+    Write-Host "2" -NoNewline -ForegroundColor Magenta
+    Write-Host "  │  " -NoNewline -ForegroundColor DarkGray
+    Write-Host "Kullanici sil (dosyalari ile beraber)" -ForegroundColor White
+    Write-Host "  ├──────────────────────────────────────────────┤" -ForegroundColor DarkGray
+    Write-Host "  │  " -NoNewline -ForegroundColor DarkGray
+    Write-Host "0" -NoNewline -ForegroundColor Red
+    Write-Host "  │  " -NoNewline -ForegroundColor DarkGray
+    Write-Host "Cikis" -ForegroundColor White
+    Write-Host "  └──────────────────────────────────────────────┘" -ForegroundColor DarkGray
     Write-Host ""
 }
 
@@ -222,11 +240,21 @@ function Remove-StudentUser {
     $userProfilePath = "C:\Users\$UserName"
 
     Write-Host ""
-    Write-Host "--- SILINECEK BILGILER ---" -ForegroundColor Yellow
-    Write-Host "Kullanici adi : $UserName" -ForegroundColor White
-    Write-Host "Profil klasoru: $userProfilePath" -ForegroundColor White
+    Write-Host "  ┌─────────────────────────────────────────────┐" -ForegroundColor Yellow
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "SILINECEK BILGILER" -ForegroundColor White -BackgroundColor DarkYellow
+    Write-Host "  ├─────────────────────────────────────────────┤" -ForegroundColor Yellow
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "Kullanici adi : " -NoNewline -ForegroundColor White
+    Write-Host "$UserName" -ForegroundColor Cyan
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "Profil klasoru: " -NoNewline -ForegroundColor White
+    Write-Host "$userProfilePath" -ForegroundColor Cyan
+    Write-Host "  └─────────────────────────────────────────────┘" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "UYARI: Bu islem geri alinamaz! Tum dosyalar silinecek!" -ForegroundColor Red
+    Write-Host "  " -NoNewline
+    Write-Host "⚠ UYARI: " -NoNewline -ForegroundColor Red
+    Write-Host "Bu islem geri alinamaz! Tum dosyalar silinecek!" -ForegroundColor Yellow
     Write-Host ""
 
     # Onay al
@@ -265,29 +293,43 @@ function Remove-StudentUser {
 
 function Start-UserRemoval {
     Write-Host ""
-    Write-Host "=== KULLANICI SILME ===" -ForegroundColor Cyan
+    Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "║     " -NoNewline -ForegroundColor Cyan
+    Write-Host "KULLANICI SILME" -NoNewline -ForegroundColor White -BackgroundColor DarkRed
+    Write-Host "     ║" -ForegroundColor Cyan
+    Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
 
     # Ogrenci kullanicilarini listele
     $studentUsers = Get-StudentUsers
 
     if ($studentUsers.Count -eq 0) {
-        Write-Host "[BILGI] Silinebilecek ogrenci kullanicisi bulunamadi." -ForegroundColor Yellow
+        Write-Host "  ⚠  " -NoNewline -ForegroundColor Yellow
+        Write-Host "Silinebilecek ogrenci kullanicisi bulunamadi." -ForegroundColor Yellow
         Write-Host ""
         return
     }
 
     # Kullanicilari listele
-    Write-Host "--- SILINEBILIR OGRENCI KULLANICILARI ---" -ForegroundColor Yellow
+    Write-Host "  ┌──────────────────────────────────────┐" -ForegroundColor Yellow
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "SILINEBILIR OGRENCI KULLANICILARI" -ForegroundColor White -BackgroundColor DarkYellow
+    Write-Host "  │  " -ForegroundColor Yellow
+    Write-Host "  └──────────────────────────────────────┘" -ForegroundColor Yellow
     Write-Host ""
     $index = 1
     $userList = @()
     foreach ($user in $studentUsers) {
+        Write-Host "  " -NoNewline
+        Write-Host "[$index]" -NoNewline -ForegroundColor Cyan
+        Write-Host "  $($user.Name)" -ForegroundColor White
         $userList += $user.Name
-        Write-Host "$index) $($user.Name)" -ForegroundColor White
         $index++
     }
-    Write-Host "0) Iptal" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "  " -NoNewline
+    Write-Host "[0]" -NoNewline -ForegroundColor Red
+    Write-Host "  Iptal" -ForegroundColor DarkGray
     Write-Host ""
 
     # Kullanicidan secim al
@@ -309,21 +351,33 @@ function Start-UserRemoval {
     # Silme islemini yap
     if (Remove-StudentUser -UserName $userName) {
         Write-Host ""
-        Write-Host "========================================" -ForegroundColor Green
-        Write-Host "   KULLANICI BASARIYLA SILINDI!" -ForegroundColor Green
-        Write-Host "========================================" -ForegroundColor Green
+        Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Green
+        Write-Host "║                                        ║" -ForegroundColor Green
+        Write-Host "║     " -NoNewline -ForegroundColor Green
+        Write-Host "✓ KULLANICI BASARIYLA SILINDI!" -NoNewline -ForegroundColor White -BackgroundColor DarkGreen
+        Write-Host "     ║" -ForegroundColor Green
+        Write-Host "║                                        ║" -ForegroundColor Green
+        Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Green
     }
     else {
         Write-Host ""
-        Write-Host "========================================" -ForegroundColor Red
-        Write-Host "   SILME ISLEMI BASARISIZ!" -ForegroundColor Red
-        Write-Host "========================================" -ForegroundColor Red
+        Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Red
+        Write-Host "║                                        ║" -ForegroundColor Red
+        Write-Host "║     " -NoNewline -ForegroundColor Red
+        Write-Host "✗ SILME ISLEMI BASARISIZ!" -NoNewline -ForegroundColor White -BackgroundColor DarkRed
+        Write-Host "     ║" -ForegroundColor Red
+        Write-Host "║                                        ║" -ForegroundColor Red
+        Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Red
     }
 }
 
 function Start-LabConfiguration {
     Write-Host ""
-    Write-Host "=== YENI OGRENCI BILGISAYARI YAPILANDIRMA ===" -ForegroundColor Cyan
+    Write-Host "╔═══════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "║  " -NoNewline -ForegroundColor Cyan
+    Write-Host "YENI OGRENCI BILGISAYARI YAPILANDIRMA" -NoNewline -ForegroundColor White -BackgroundColor DarkBlue
+    Write-Host "  ║" -ForegroundColor Cyan
+    Write-Host "╚═══════════════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
 
     # 1. Lab numarasi al (1-6)
@@ -342,11 +396,23 @@ function Start-LabConfiguration {
 
     # 4. Ozet goster
     Write-Host ""
-    Write-Host "--- YAPILACAK ISLEMLER ---" -ForegroundColor Yellow
-    Write-Host "Grup adi        : $groupName" -ForegroundColor White
-    Write-Host "Bilgisayar adi  : $computerName" -ForegroundColor White
-    Write-Host "Kullanici adi   : $userName" -ForegroundColor White
-    Write-Host "Yetki seviyesi  : Administrator (Tam yetki)" -ForegroundColor Cyan
+    Write-Host "  ┌─────────────────────────────────────────────┐" -ForegroundColor Yellow
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "YAPILACAK ISLEMLER" -ForegroundColor White -BackgroundColor DarkYellow
+    Write-Host "  ├─────────────────────────────────────────────┤" -ForegroundColor Yellow
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "Grup adi        : " -NoNewline -ForegroundColor White
+    Write-Host "$groupName" -ForegroundColor Cyan
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "Bilgisayar adi  : " -NoNewline -ForegroundColor White
+    Write-Host "$computerName" -ForegroundColor Cyan
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "Kullanici adi   : " -NoNewline -ForegroundColor White
+    Write-Host "$userName" -ForegroundColor Cyan
+    Write-Host "  │  " -NoNewline -ForegroundColor Yellow
+    Write-Host "Yetki seviyesi  : " -NoNewline -ForegroundColor White
+    Write-Host "Administrator (Tam yetki)" -ForegroundColor Green
+    Write-Host "  └─────────────────────────────────────────────┘" -ForegroundColor Yellow
     Write-Host ""
 
     # 5. Onay al
@@ -397,9 +463,13 @@ function Start-LabConfiguration {
     # 7. Sonuc
     Write-Host ""
     if ($success) {
-        Write-Host "========================================" -ForegroundColor Green
-        Write-Host "   YAPILANDIRMA TAMAMLANDI!" -ForegroundColor Green
-        Write-Host "========================================" -ForegroundColor Green
+        Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Green
+        Write-Host "║                                        ║" -ForegroundColor Green
+        Write-Host "║     " -NoNewline -ForegroundColor Green
+        Write-Host "✓ YAPILANDIRMA TAMAMLANDI!" -NoNewline -ForegroundColor White -BackgroundColor DarkGreen
+        Write-Host "     ║" -ForegroundColor Green
+        Write-Host "║                                        ║" -ForegroundColor Green
+        Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Green
         Write-Host ""
 
         # Restart gerekiyor mu kontrol et
@@ -417,9 +487,15 @@ function Start-LabConfiguration {
         }
     }
     else {
-        Write-Host "========================================" -ForegroundColor Red
-        Write-Host "   YAPILANDIRMA TAMAMLANAMADI!" -ForegroundColor Red
-        Write-Host "========================================" -ForegroundColor Red
+        Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Red
+        Write-Host "║                                        ║" -ForegroundColor Red
+        Write-Host "║   " -NoNewline -ForegroundColor Red
+        Write-Host "✗ YAPILANDIRMA TAMAMLANAMADI!" -NoNewline -ForegroundColor White -BackgroundColor DarkRed
+        Write-Host "   ║" -ForegroundColor Red
+        Write-Host "║                                        ║" -ForegroundColor Red
+        Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "  ⚠  " -NoNewline -ForegroundColor Yellow
         Write-Host "Lutfen hatalari kontrol edin." -ForegroundColor Yellow
     }
 }
