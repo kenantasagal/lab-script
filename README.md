@@ -17,6 +17,8 @@ irm https://raw.githubusercontent.com/kenantasagal/lab-script/main/lab-setup.ps1
 - **Admin Yetkisi**: Olusturulan kullanicilar Administrator yetkisine sahip
 - **Bilgisayar Adi Degisimi**: LAB-LL-BILXX formatinda otomatik isimlendirme
 - **Kullanici Silme**: Kullanicilari dosyalari ile beraber guvenli sekilde siler
+- **MAC Adresi/Seri No Bazli Tanimlama**: Toplu yapilandirma icin MAC adresi ve seri numarasi ile otomatik tanimlama
+- **CSV Destegi**: Bilgisayar bilgilerini CSV'ye kaydetme ve CSV'den otomatik yapilandirma
 - **Akilli Dogrulama**: Girdi kontrolu ve cakisma onleme
 - **Uzaktan Calistirma**: `irm | iex` destegi
 
@@ -67,12 +69,77 @@ irm https://github.com/kenantasagal/lab-script/raw/main/lab-setup.ps1 | iex
 ### Kullanici Silme
 
 1. Menuden **2** secin
-2. Silinecek kullanici adini girin (ornek: Ogrenci07)
+2. Listeden silinecek kullaniciyi secin
 3. Silme ozetini kontrol edin
 4. Onaylayin (E/H)
 5. Kullanici ve tum dosyalari silinecek
 
 **UYARI**: Silme islemi geri alinamaz! C:\Users\OgrenciXX klasoru tamamen silinir.
+
+### MAC Adresi/Seri No ile Toplu Yapilandirma
+
+Bu ozellik, atolyede birden fazla bilgisayari yapilandirirken cok kullanislidir. Her bilgisayar kendi MAC adresine gore otomatik olarak taninir ve yapilandirilir.
+
+#### Adim 1: Bilgisayar Bilgilerini Toplama
+
+Her bilgisayarda:
+
+1. Menuden **3** secin (Bilgisayar bilgilerini topla)
+2. Script otomatik olarak su bilgileri toplar:
+   - MAC Adresi
+   - Seri Numarasi (BIOS)
+   - Mevcut Bilgisayar Adi
+   - IP Adresi
+   - Windows Surumu
+3. Bilgiler Desktop'a `bilgisayar-[MAC-ADRESI].csv` dosyasina kaydedilir
+
+**Ornek dosya adi**: `bilgisayar-00-1B-44-11-3A-B7.csv`
+
+#### Adim 2: CSV Dosyalarini Toplama ve Birlestirme
+
+1. Tum bilgisayarlardan CSV dosyalarini toplayin (USB ile veya ag uzerinden)
+2. Tum CSV dosyalarini tek bir dosyada birlestirin:
+   - Excel'de tum CSV dosyalarini acin
+   - Veya PowerShell ile: `Get-Content bilgisayar-*.csv | Select-Object -First 1 | Out-File bilgisayar-listesi.csv -Encoding UTF8`
+   - Sonra tum dosyalarin icerigini (baslik haric) birlestirin
+3. Birlesik dosyayi `bilgisayar-listesi.csv` olarak kaydedin
+
+#### Adim 3: Lab ve Bilgisayar Numaralarini Doldurma
+
+1. `bilgisayar-listesi.csv` dosyasini Excel'de acin
+2. `LabNumber` ve `ComputerNumber` sutunlarini doldurun:
+   - `LabNumber`: 1-6 arasi lab numarasi
+   - `ComputerNumber`: 1-99 arasi bilgisayar sirasi
+3. Dosyayi kaydedin
+
+**Ornek CSV Icerigi:**
+```csv
+MACAddress,SerialNumber,ComputerName,IPAddress,WindowsVersion,CollectionDate,LabNumber,ComputerNumber,Status
+00-1B-44-11-3A-B7,ABC123456,DESKTOP-ABC,192.168.1.10,Windows 10 Pro,2025-01-15 10:30:00,2,15,Beklemede
+00-1B-44-11-3A-B8,ABC123457,DESKTOP-DEF,192.168.1.11,Windows 10 Pro,2025-01-15 10:31:00,2,16,Beklemede
+```
+
+#### Adim 4: Birlesik CSV'yi Her Bilgisayara Kopyalama
+
+1. Birlesik `bilgisayar-listesi.csv` dosyasini her bilgisayarin Desktop'ina kopyalayin
+2. USB ile veya ag paylasimi ile dagitin
+
+#### Adim 5: Otomatik Yapilandirma
+
+Her bilgisayarda:
+
+1. Menuden **4** secin (CSV'den otomatik yapilandirma)
+2. Script otomatik olarak:
+   - Mevcut bilgisayarin MAC adresini okur
+   - CSV dosyasinda bu MAC adresini bulur
+   - CSV'deki Lab ve Bilgisayar numaralarina gore yapilandirma yapar
+3. Yapilandirma tamamlandiginda CSV'deki durum "Tamamlandi" olarak guncellenir
+
+**Avantajlar:**
+- Her bilgisayar kendi MAC adresine gore otomatik taninir
+- Hangi bilgisayarin hangi numara oldugunu bilmenize gerek yok
+- Toplu yapilandirma cok daha hizli ve hatasiz
+- CSV dosyasi Excel'de kolayca duzenlenebilir
 
 ## Ornekler
 
@@ -144,11 +211,26 @@ Format: `OgrenciXX`
 
 ### Kullanici Silme (Secim 2)
 
-1. **Format Kontrolu**: Sadece `OgrenciXX` formatindaki kullanicilar silinebilir
-2. **Var Mi Kontrolu**: Kullanicinin var oldugu dogrulanir
-3. **Onay Alma**: Kullanicidan silme onayi alinir
-4. **Kullanici Silme**: Yerel kullanici hesabi silinir
-5. **Profil Silme**: `C:\Users\OgrenciXX` klasoru tum icerikle beraber silinir
+1. **Listeleme**: Mevcut ogrenci kullanicilari listelenir
+2. **Secim**: Kullanicidan silinecek kullanici secilir
+3. **Format Kontrolu**: Sadece `OgrenciXX` formatindaki kullanicilar silinebilir
+4. **Var Mi Kontrolu**: Kullanicinin var oldugu dogrulanir
+5. **Onay Alma**: Kullanicidan silme onayi alinir
+6. **Kullanici Silme**: Yerel kullanici hesabi silinir
+7. **Profil Silme**: `C:\Users\OgrenciXX` klasoru tum icerikle beraber silinir
+
+### Bilgisayar Bilgilerini Toplama (Secim 3)
+
+1. **Bilgi Toplama**: MAC adresi, seri numarasi, IP adresi, Windows surumu toplanir
+2. **Dosya Olusturma**: Desktop'a `bilgisayar-[MAC-ADRESI].csv` dosyasi olusturulur
+3. **Tek Kayit**: Her bilgisayar sadece kendi bilgisini yazar
+
+### CSV'den Otomatik Yapilandirma (Secim 4)
+
+1. **CSV Okuma**: Desktop'taki `bilgisayar-listesi.csv` dosyasi okunur
+2. **MAC Eslestirme**: Mevcut bilgisayarin MAC adresi CSV'de aranir
+3. **Yapilandirma**: CSV'deki Lab ve Bilgisayar numaralarina gore otomatik yapilandirma yapilir
+4. **Durum Guncelleme**: CSV'deki durum "Tamamlandi" olarak guncellenir
 
 ## Guvenlik
 
@@ -199,6 +281,18 @@ Guvenlik icin. Boylece yanlis islemle Administrator, System gibi onemli kullanic
 ### Kullanici silindiginde gruplardan da cikar mi?
 Evet! Windows otomatik olarak kullaniciyi tum gruplardan (LAB-XX, Administrators) cikarir.
 
+### MAC adresi bazli tanimlama nasil calisir?
+Her bilgisayar kendi MAC adresini kullanarak CSV dosyasinda kendini bulur. Bu sayede hangi bilgisayarin hangi numara oldugunu bilmenize gerek kalmaz.
+
+### CSV dosyalarini nasil birlestiririm?
+Excel'de tum CSV dosyalarini acip, baslik satirini bir kez yazip, diger dosyalarin icerigini (baslik haric) kopyalayin. Veya PowerShell ile birlestirebilirsiniz.
+
+### CSV dosyasi nereye kaydediliyor?
+Her bilgisayar kendi bilgisini Desktop klasorune `bilgisayar-[MAC-ADRESI].csv` adiyla kaydeder.
+
+### Birlesik CSV dosyasini her bilgisayara nasil kopyalarim?
+USB bellek ile, ag paylasimi ile veya uzaktan erisim ile her bilgisayarin Desktop'ina `bilgisayar-listesi.csv` dosyasini kopyalayin.
+
 ## Sorun Giderme
 
 ### "Script disabled" hatasi
@@ -227,6 +321,15 @@ Bu script egitim amacli olarak gelistirilmistir. Serbestce kullanabilir ve degis
 Lab Otomasyon Ekibi
 
 ## Surum Gecmisi
+
+### v1.2 (2025-01-15)
+- **YENI**: MAC adresi/Seri numarasi bazli tanimlama ozelligi
+- **YENI**: Bilgisayar bilgilerini CSV'ye kaydetme
+- **YENI**: CSV'den otomatik yapilandirma
+- Her bilgisayar kendi bilgisini ayrı CSV dosyasina yazar
+- Toplu yapilandirma icin CSV birlestirme destegi
+- Kullanici silme menüsünde liste gosterimi eklendi
+- Modern ve kullanici dostu arayuz iyilestirmeleri
 
 ### v1.1 (2025-12-31)
 - **YENI**: Kullanici silme ozelligi eklendi
